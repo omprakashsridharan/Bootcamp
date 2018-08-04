@@ -10,54 +10,63 @@ public class LewisNiece {
     public static HashSet<String> hs=new HashSet<>();
     public static void main(String[] args) throws IOException {
         readFromFile();
-        printPath("CLAY","GOLD");
-    }
-
-    private static void printPath(String s1, String s2) {
-
-        Queue<String> q = new LinkedList<>();
-        q.add(s1);
-        boolean done = false;
-        while(q.size()!=0 && !done)
-        {
-            String temp = q.remove();
-            ArrayList<String> oneDistanceWords = getOneDistantWords(temp);
-          //  System.out.println(temp);
-            for(String s:oneDistanceWords)
-            {
-                if(!hs.contains(s) )
-                {
-                    q.add(s);
-                }
-                if(s.equals(s2)){
-                    System.out.println(s+" ");
-                    done = true;
-                }
-            }
+        Ladder result = printPath("CLAY","GOLD");
+        if(result!=null){
+            System.out.println("Length is "+result.getLength() + " and path is :"+ result.getPath());
+        }else{
+            System.out.println("No Path Found");
         }
     }
 
-        public static ArrayList<String> getOneDistantWords(String startWord) {
-            ArrayList<String> similarWords = hashMap.get(startWord.length());
-            ArrayList<String> oneDistantWords = new ArrayList<>();
-            for (String i : similarWords) {
-                if (compare(startWord, i) && !(startWord.equals(i))) {
-                    oneDistantWords.add(i);
+    private static Ladder printPath(String s1, String s2) {
+        ArrayList<String> dictionary = hashMap.get(4);
+        List<String> path = new LinkedList<String>();
+        path.add(s1);
+        Queue<Ladder> queue = new LinkedList<Ladder>();
+        queue.add(new Ladder(path, 1, s1));
+        dictionary.remove(s1);
+        while(!queue.isEmpty() && !queue.peek().equals(s2)){
+            Ladder ladder = queue.remove();
+
+            if(s2.equals(ladder.getLastWord())){
+                return ladder;
+            }
+
+            Iterator<String> i = dictionary.iterator();
+            while (i.hasNext()) {
+                String string = i.next();
+
+                if(differByOne(string, ladder.getLastWord())){
+
+                    List<String> list = new LinkedList<String>(ladder.getPath());
+                    list.add(string);
+                    queue.add(new Ladder(list, ladder.getLength()+1, string));
+                    i.remove();
                 }
             }
-            return oneDistantWords;
+        }
+        if(!queue.isEmpty()){
+            return queue.peek();
+        }
+        return null;
+    }
+
+
+    private static boolean differByOne(String word1, String word2){
+        if (word1.length() != word2.length()) {
+            return false;
         }
 
-        public static boolean compare(String one, String two) {
-            int count = 0;
-            for (int i = 0; i < one.length(); i++) {
-                if (one.charAt(i) != two.charAt(i))
-                    count++;
+        int diffCount = 0;
+        for (int i = 0; i < word1.length(); i++) {
+            if (word1.charAt(i) != word2.charAt(i)) {
+                diffCount++;
             }
-            if (count > 1)
-                return false;
-            return true;
         }
+        return (diffCount == 1);
+    }
+
+
 
     private static void readFromFile() throws IOException {
         String fileName = "src/sowpods.txt";
