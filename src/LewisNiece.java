@@ -10,7 +10,13 @@ public class LewisNiece {
     public static HashMap<Integer, ArrayList<String>> hashMap = new HashMap<>();
     public static void main(String[] args) throws IOException {
         readFromFile();
+        printPath("CLAY","GOLD");
     }
+
+    private static void printPath(String s1, String s2) {
+
+    }
+
 
     private static void readFromFile() throws IOException {
         String fileName = "src/sowpods.txt";
